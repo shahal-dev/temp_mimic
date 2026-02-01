@@ -11,12 +11,18 @@
             "16464",
             "16142",
             "16143"
-        ]
+        ],
+        "script_dir": "./parent/Ophiuchus/scripts",
+        "reppro_dir": "./parent/Ophiuchus/reprocessed_data",
+        "merge_dir": "./parent/Ophiuchus/merge_Ophiuchus_100.0_70",
+        "spec_file_dir": "./parent/Ophiuchus/spec_files",
+        "region_file_dir": "./parent/Ophiuchus/region_files",
+        "map_file_dir": "./parent/Ophiuchus/map_files"
     },
     "flags": {
-        "reprocessed": false,
-        "flare_filtered": false,
-        "merge_data": false,
+        "reprocessed": true,
+        "flare_filtered": true,
+        "merge_data": true,
         "flux_maps": false,
         "remove_point_source": false,
         "countour_binning": false,

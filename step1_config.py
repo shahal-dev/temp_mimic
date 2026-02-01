@@ -19,30 +19,46 @@ if inp == 'y':
     config['info_dict']['name'] = name
     config['info_dict']['sn_per_region'] = sn_per_region
     config['info_dict']['reg_smoothness'] = reg_smoothness
-    config['info_dict']['cluster_directory'] = cluster_directory
-    config['info_dict']['parent_directory'] = parent_directory
+    # Normalize paths to remove ./ prefix and clean up path format
+    config['info_dict']['cluster_directory'] = os.path.normpath(cluster_directory)
+    config['info_dict']['parent_directory'] = os.path.normpath(parent_directory)
 
-    parent_directory = os.path.join(parent_directory, name)
+    parent_directory = os.path.join(config['info_dict']['parent_directory'], name)
     if not os.path.exists(parent_directory):
         os.makedirs(parent_directory)
 
-    reppro_dir = os.mkdir(os.path.join(parent_directory, 'reprocessed_data'))
-    merge_dir = os.mkdir(os.path.join(parent_directory, f'merge_{name}_{reg_smoothness}_{sn_per_region}'))
-    spec_file_dir = os.mkdir(os.path.join(parent_directory, 'spec_files'))
-    region_file_dir = os.mkdir(os.path.join(parent_directory, 'region_files'))
-    map_file_dir = os.mkdir(os.path.join(parent_directory, 'map_files'))
+    reppro_dir = os.path.join(parent_directory, 'reprocessed_data')
+    merge_dir = os.path.join(parent_directory, f'merge_{name}_{reg_smoothness}_{sn_per_region}')
+    spec_file_dir = os.path.join(parent_directory, 'spec_files')
+    region_file_dir = os.path.join(parent_directory, 'region_files')
+    map_file_dir = os.path.join(parent_directory, 'map_files')
+    
+    os.makedirs(reppro_dir, exist_ok=True)
+    os.makedirs(merge_dir, exist_ok=True)
+    os.makedirs(spec_file_dir, exist_ok=True)
+    os.makedirs(region_file_dir, exist_ok=True)
+    os.makedirs(map_file_dir, exist_ok=True)
+
+    # Normalize all directory paths before storing
+    config['info_dict']['reppro_dir'] = os.path.normpath(reppro_dir)
+    config['info_dict']['merge_dir'] = os.path.normpath(merge_dir)
+    config['info_dict']['spec_file_dir'] = os.path.normpath(spec_file_dir)
+    config['info_dict']['region_file_dir'] = os.path.normpath(region_file_dir)
+    config['info_dict']['map_file_dir'] = os.path.normpath(map_file_dir)
 
 
     with open(filename, 'w') as f:
         json.dump(config, f, indent=4)
 else:
     with open(filename, 'r') as f:
-        info_dict = json.load(f)   
-    parent_directory = info_dict['parent_directory']
-    name = info_dict['name']
-    sn_per_region = info_dict['sn_per_region']
-    reg_smoothness = info_dict['reg_smoothness']
-    cluster_directory = info_dict['cluster_directory']
+        config = json.load(f)   
+    parent_directory = config['info_dict']['parent_directory']
+    name = config['info_dict']['name']
+    sn_per_region = config['info_dict']['sn_per_region']
+    reg_smoothness = config['info_dict']['reg_smoothness']
+    cluster_directory = config['info_dict']['cluster_directory']
+    
+    parent_directory = os.path.join(parent_directory, name)
 
     reppro_dir = os.path.join(parent_directory, 'reprocessed_data')
     merge_dir = os.path.join(parent_directory, f'merge_{name}_{reg_smoothness}_{sn_per_region}')
@@ -61,6 +77,12 @@ else:
     if not os.path.exists(map_file_dir):
         os.makedirs(map_file_dir)
 
+    # Normalize all directory paths before storing
+    config['info_dict']['reppro_dir'] = os.path.normpath(reppro_dir)
+    config['info_dict']['merge_dir'] = os.path.normpath(merge_dir)
+    config['info_dict']['spec_file_dir'] = os.path.normpath(spec_file_dir)
+    config['info_dict']['region_file_dir'] = os.path.normpath(region_file_dir)
+    config['info_dict']['map_file_dir'] = os.path.normpath(map_file_dir)
 
 
 
@@ -76,10 +98,18 @@ config['flags']['xspec_fitting'] = False
 config['flags']['parse_results'] = False
 config['flags']['maps_created'] = False
 
-with open(filename, 'w') as f:
+
+config["info_dict"]["obs_ids"] = []
+for folder in os.listdir(config["info_dict"]["cluster_directory"]):
+    obs_id = folder.split()[0]
+    config["info_dict"]["obs_ids"].append(obs_id)
+script_dir = os.path.join(config['info_dict']['parent_directory'], config["info_dict"]["name"], 'scripts')
+config['info_dict']['script_dir'] = os.path.normpath(script_dir)
+
+with open('config.json', 'w') as f:
     json.dump(config, f, indent=4)
 
-
+os.makedirs(script_dir, exist_ok=True)
 
 
 
