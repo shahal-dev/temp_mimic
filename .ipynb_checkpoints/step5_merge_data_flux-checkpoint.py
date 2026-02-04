@@ -6,17 +6,15 @@ import os
 import json
 def _mkmap(input, output, head):
     fits.writeto(output, input, head, overwrite=True)
-config = load_config()
-PARENT_DIR = os.path.join(REPO_DIR, config['info_dict']['parent_directory'])
 
-fluxim =fits.open(os.path.join(PARENT_DIR, config['info_dict']['merge_dir'], 'broad_flux.img'))
+fluxim =fits.open(os.path.join(REPO_DIR, 'parent/Ophiuchus/merge_Ophiuchus_100.0_70/broad_flux.img'))
 fluxhdr = fluxim[0].header
 fluximdata = fluxim[0].data
 
-threshim = fits.open(os.path.join(PARENT_DIR, config['info_dict']['merge_dir'], 'broad_thresh.img'))
+threshim = fits.open(os.path.join(REPO_DIR, 'parent/Ophiuchus/merge_Ophiuchus_100.0_70/broad_thresh.img'))
 threshimdata = threshim[0].data
 
-expoim = fits.open(os.path.join(PARENT_DIR, config['info_dict']['merge_dir'], 'broad_thresh.expmap'))
+expoim = fits.open(os.path.join(REPO_DIR, 'parent/Ophiuchus/merge_Ophiuchus_100.0_70/broad_thresh.expmap'))
 expohd = expoim[0].header
 expoimdata = expoim[0].data
 
@@ -27,7 +25,7 @@ threshav = threshsum/ len(threshimdata)
 fluxav = fluxsum/np.mean(fluximdata)
 scaledflux = (2.5*fluximdata*(threshav/fluxav))
 
-_mkmap(scaledflux, os.path.join(PARENT_DIR, config['info_dict']['merge_dir'], 'scaled_broad_flux.fits'), fluxhdr)
+_mkmap(scaledflux, os.path.join(REPO_DIR, 'parent/Ophiuchus/merge_Ophiuchus_100.0_70/scaled_broad_flux.fits'), fluxhdr)
 
 
 config = load_config()

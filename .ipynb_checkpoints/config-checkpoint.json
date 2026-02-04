@@ -1,18 +1,18 @@
 {
     "info_dict": {
         "name": "ophiuchus",
-        "sn_per_region": 50,
-        "reg_smoothness": 15.0,
+        "sn_per_region": 70,
+        "reg_smoothness": 100.0,
         "cluster_directory": "data",
-        "parent_directory": "./",
+        "parent_directory": ".",
         "reppro_dir": "ophiuchus/reprocessed_data",
-        "merge_dir": "ophiuchus/merge_ophiuchus_15.0_50",
+        "merge_dir": "ophiuchus/merge_ophiuchus_100.0_70",
         "spec_file_dir": "ophiuchus/spec_files",
         "region_file_dir": "ophiuchus/region_files",
         "map_file_dir": "ophiuchus/map_files",
         "obs_ids": [
             "16626",
-            "16143",    
+            "16143",
             "16464",
             "16142",
             "16627"
@@ -22,10 +22,10 @@
     "flags": {
         "reprocessed": true,
         "flare_filtered": true,
-        "merge_data": true,
-        "flux_maps": true,
-        "remove_point_source": true,
-        "contour_binning": true,
+        "merge_data": false,
+        "flux_maps": false,
+        "remove_point_source": false,
+        "countour_binning": false,
         "convert_region_coordinates": false,
         "extract_spectra": false,
         "xspec_fitting": false,

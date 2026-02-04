@@ -6,6 +6,7 @@ from glob import glob
 # Get the directory where this file lives (repo root)
 REPO_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(REPO_DIR, "config.json")
+
 def load_config():
     """Load config.json from the repo directory."""
     with open(CONFIG_PATH, "r") as f:
@@ -79,10 +80,3 @@ def get_ccd_filter(evt_path):
     n_i = sum(1 for c in chip_ids if c in ACIS_I_IDS)
     n_s = sum(1 for c in chip_ids if c in ACIS_S_IDS)
     return "0:3" if n_i >= n_s else "4:9"
-
-
-def get_num_of_only_files(directory):
-    return sum(
-        entry.is_file()
-        for entry in os.scandir(directory)
-    )
