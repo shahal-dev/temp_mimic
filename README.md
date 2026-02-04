@@ -34,22 +34,22 @@ Galaxy clusters are the largest gravitationally bound structures in the universe
 
 The ICM emits X-rays through **thermal bremsstrahlung** (free-free emission):
 
-$$
-\epsilon_{ff} \propto n_e^2 T^{1/2} \exp\left(-\frac{h\nu}{kT}\right)
-$$
+```math
+\epsilon_{ff} \propto n_e^2 \, T^{1/2} \, \exp\left(-\frac{h\nu}{kT}\right)
+```
 
 Where:
-- $n_e$ = electron density (typically 10⁻³ - 10⁻¹ cm⁻³)
-- $T$ = temperature (typically 2-15 keV, where 1 keV ≈ 1.16 × 10⁷ K)
-- $h\nu$ = photon energy
+- n_e = electron density (typically 10⁻³ - 10⁻¹ cm⁻³)
+- T = temperature (typically 2-15 keV, where 1 keV ≈ 1.16 × 10⁷ K)
+- hν = photon energy
 
 ### What We Measure
 
 | Observable | Physical Information | How We Get It |
 |------------|---------------------|---------------|
-| X-ray surface brightness | $\int n_e^2 \, dl$ (emission measure) | Imaging |
-| Spectrum shape | Temperature $T$ | Spectral fitting |
-| Line ratios | Metal abundance $Z$ | Spectral fitting |
+| X-ray surface brightness | ∫n_e² dl (emission measure) | Imaging |
+| Spectrum shape | Temperature T | Spectral fitting |
+| Line ratios | Metal abundance Z | Spectral fitting |
 | Spatial temperature map | ICM thermodynamics | Spatially-resolved spectroscopy |
 
 ### The Goal of This Pipeline
@@ -80,16 +80,18 @@ Create **spatial regions** where we can extract spectra with sufficient signal-t
   - Lower S/N → more spatial resolution, but larger temperature uncertainties
 
 **Relationship to temperature uncertainty:**
-$$
-\frac{\Delta T}{T} \approx \frac{1}{\text{S/N}} \times f(T, N_H, Z)
-$$
+
+```math
+\frac{\Delta T}{T} \approx \frac{1}{\mathrm{S/N}} \times f(T, N_H, Z)
+```
 
 For S/N = 70, typical temperature uncertainty is ~5-10%.
 
 **Minimum counts needed:**
-$$
-N_{\text{counts}} \approx (\text{S/N})^2 = 70^2 = 4900 \text{ counts per region}
-$$
+
+```math
+N_{\mathrm{counts}} \approx (\mathrm{S/N})^2 = 70^2 = 4900 \; \mathrm{counts \; per \; region}
+```
 
 #### `reg_smoothness` (float)
 - **What it is:** Signal-to-noise for the smoothed image used to define contours
@@ -194,9 +196,10 @@ ACIS CCDs detect X-rays when photons create electron-hole pairs in silicon. But 
 The outer ring of the 5×5 island should have zero charge for a real X-ray (which deposits all energy in ~1 pixel). Cosmic rays create charge trails across multiple pixels.
 
 **Screening criterion:**
-$$
-\sum_{i \in \text{outer 16 pixels}} \text{PHA}_i < \text{threshold}
-$$
+
+```math
+\sum_{i \in \mathrm{outer \; 16 \; pixels}} \mathrm{PHA}_i < \mathrm{threshold}
+```
 
 Events failing this test are flagged with `status ≠ 0` and can be filtered out.
 
@@ -286,21 +289,22 @@ The exposure map depends on energy (through effective area and vignetting). 2.3 
 
 The exposure map accounts for:
 
-$$
-E(x,y) = t_{\text{live}} \times A_{\text{eff}}(E, \theta) \times V(\theta) \times D(x,y)
-$$
+```math
+E(x,y) = t_{\mathrm{live}} \times A_{\mathrm{eff}}(E, \theta) \times V(\theta) \times D(x,y)
+```
 
 | Component | Symbol | Physical Meaning |
 |-----------|--------|------------------|
-| Live time | $t_{\text{live}}$ | Total exposure minus dead time, GTI gaps |
-| Effective area | $A_{\text{eff}}$ | Mirror collecting area × CCD quantum efficiency |
-| Vignetting | $V(\theta)$ | Reduction of effective area off-axis |
-| Dither correction | $D(x,y)$ | Accounts for spacecraft wobble during exposure |
+| Live time | t_live | Total exposure minus dead time, GTI gaps |
+| Effective area | A_eff | Mirror collecting area × CCD quantum efficiency |
+| Vignetting | V(θ) | Reduction of effective area off-axis |
+| Dither correction | D(x,y) | Accounts for spacecraft wobble during exposure |
 
 **Vignetting function:**
-$$
+
+```math
 V(\theta) \approx 1 - 0.1 \times \left(\frac{\theta}{10'}\right)^2
-$$
+```
 
 At 10 arcmin off-axis, effective area is reduced by ~10%.
 
@@ -328,9 +332,10 @@ The Chandra PSF is the sharpest of any X-ray telescope but degrades off-axis:
 - 90% ECF radius ≈ 1 arcsec
 
 **Off-axis:**
-$$
+
+```math
 r_{90\%}(\theta) \approx 1'' \times \sqrt{1 + \left(\frac{\theta}{3'}\right)^4}
-$$
+```
 
 At 5 arcmin off-axis: PSF 90% radius ≈ 5 arcsec
 At 10 arcmin off-axis: PSF 90% radius ≈ 20 arcsec
@@ -386,9 +391,10 @@ Each scale is sensitive to sources of different angular sizes:
 | 32 | 16" | Very extended structures |
 
 **Mexican Hat wavelet at scale s:**
-$$
+
+```math
 \psi_s(r) = \left(1 - \frac{r^2}{s^2}\right) \exp\left(-\frac{r^2}{2s^2}\right)
-$$
+```
 
 This wavelet is **positive** in the center and **negative** in the annulus, making it optimal for detecting localized excesses above a local background.
 
@@ -397,27 +403,30 @@ This wavelet is **positive** in the center and **negative** in the annulus, maki
 **Physical meaning:** Probability of a false detection per pixel per scale.
 
 For an image with N pixels and S scales:
-$$
-N_{\text{false}} \approx N \times S \times \text{sigthresh}
-$$
+
+```math
+N_{\mathrm{false}} \approx N \times S \times \mathrm{sigthresh}
+```
 
 For a 4096×4096 image with 6 scales:
-$$
-N_{\text{false}} \approx 16.8 \times 10^6 \times 6 \times 5 \times 10^{-6} \approx 0.5 \text{ false sources}
-$$
+
+```math
+N_{\mathrm{false}} \approx 16.8 \times 10^6 \times 6 \times 5 \times 10^{-6} \approx 0.5 \; \mathrm{false \; sources}
+```
 
 **Equivalent significance:**
-$$
-\text{sigthresh} = 5 \times 10^{-6} \Leftrightarrow 4.4\sigma \text{ (one-sided)}
-$$
+
+```math
+\mathrm{sigthresh} = 5 \times 10^{-6} \Leftrightarrow 4.4\sigma \; \mathrm{(one \text{-} sided)}
+```
 
 #### `ellsigma=5.0` - Source Region Size
 
 Detected sources are characterized by ellipses. `ellsigma=5.0` means the ellipse semi-axes are 5× the fitted Gaussian sigma:
 
-$$
-a = 5 \sigma_{\text{major}}, \quad b = 5 \sigma_{\text{minor}}
-$$
+```math
+a = 5 \sigma_{\mathrm{major}}, \quad b = 5 \sigma_{\mathrm{minor}}
+```
 
 For a Gaussian, 5σ contains 99.99994% of the flux. This ensures essentially all source counts are included in the region.
 
@@ -497,8 +506,8 @@ deflare {obs_id}_0.5-7.lc {obs_id}_0.5-7.gti method=clean
 
 #### Algorithm: `method=clean`
 
-1. Compute mean count rate $\bar{r}$ and standard deviation $\sigma$
-2. Identify outliers: time bins where $|r_i - \bar{r}| > 3\sigma$
+1. Compute mean count rate r̄ and standard deviation σ
+2. Identify outliers: time bins where |r_i - r̄| > 3σ
 3. Remove outliers from sample
 4. Repeat until no more outliers found (convergence)
 5. Good Time Intervals = time bins that were never flagged
@@ -583,7 +592,7 @@ Creates a background **image** (not event list) matched to the observation's ima
 Single Chandra observations are typically 20-100 ks (5-28 hours). For detailed cluster analysis, we often need 200-500 ks total exposure, requiring multiple observations.
 
 **Benefits of merging:**
-- Increased S/N: $\text{S/N} \propto \sqrt{t_{\text{exposure}}}$
+- Increased S/N: S/N ∝ √(t_exposure)
 - Better coverage of chip gaps (different roll angles)
 - Redundancy for systematic checks
 
@@ -658,11 +667,11 @@ Each observation has a different:
 
 `merge_obs` reprojects all events to a common **tangent point** (usually the first observation's aim point) using the WCS transformation:
 
-$$
+```math
 \begin{pmatrix} x' \\ y' \end{pmatrix} = \mathbf{R}(\theta) \cdot \begin{pmatrix} x - x_0 \\ y - y_0 \end{pmatrix} + \begin{pmatrix} x'_0 \\ y'_0 \end{pmatrix}
-$$
+```
 
-Where $\mathbf{R}(\theta)$ is a rotation matrix for the roll angle difference.
+Where **R**(θ) is a rotation matrix for the roll angle difference.
 
 #### Output Files
 
@@ -677,14 +686,16 @@ Where $\mathbf{R}(\theta)$ is a rotation matrix for the roll angle difference.
 #### Exposure Map Combination
 
 For overlapping regions:
-$$
-E_{\text{merged}}(x,y) = \sum_{i=1}^{N_{\text{obs}}} E_i(x,y)
-$$
+
+```math
+E_{\mathrm{merged}}(x,y) = \sum_{i=1}^{N_{\mathrm{obs}}} E_i(x,y)
+```
 
 The merged flux image is:
-$$
-F_{\text{merged}}(x,y) = \frac{\sum_i C_i(x,y)}{\sum_i E_i(x,y)}
-$$
+
+```math
+F_{\mathrm{merged}}(x,y) = \frac{\sum_i C_i(x,y)}{\sum_i E_i(x,y)}
+```
 
 ---
 
@@ -709,28 +720,29 @@ scaledflux = 2.5 * fluximdata * (threshav / fluxav)
 
 #### Mathematical Breakdown
 
-$$
-F_{\text{scaled}}(x,y) = 2.5 \times F(x,y) \times \frac{\bar{C}}{\bar{F}}
-$$
+```math
+F_{\mathrm{scaled}}(x,y) = 2.5 \times F(x,y) \times \frac{\bar{C}}{\bar{F}}
+```
 
 Where:
-- $F(x,y)$ = flux image value [photons/cm²/s]
-- $\bar{C}$ = mean counts per pixel
-- $\bar{F}$ = mean flux per pixel
+- F(x,y) = flux image value [photons/cm²/s]
+- C̄ = mean counts per pixel
+- F̄ = mean flux per pixel
 - 2.5 = empirical scaling factor
 
 #### Physical Interpretation
 
 | Term | What It Does |
 |------|--------------|
-| $F(x,y)$ | Preserves spatial structure |
-| $\bar{C}/\bar{F}$ | Converts flux back to count-like units |
+| F(x,y) | Preserves spatial structure |
+| C̄/F̄ | Converts flux back to count-like units |
 | 2.5 | Empirical factor to optimize S/N estimation in contbin |
 
 The result: pixel values are proportional to expected counts, suitable for S/N calculation:
-$$
-\text{S/N} \approx \sqrt{F_{\text{scaled}}}
-$$
+
+```math
+\mathrm{S/N} \approx \sqrt{F_{\mathrm{scaled}}}
+```
 
 ### Output File
 
@@ -873,9 +885,9 @@ contbin --sn=70 --smoothsn=100.0 --constrainfill --constrainval=3. input.fits
 
 **Physical meaning:** Each bin will have approximately S/N = 70, meaning:
 
-$$
-\frac{N_{\text{source}}}{\sqrt{N_{\text{source}} + N_{\text{background}}}} \approx 70
-$$
+```math
+\frac{N_{\mathrm{source}}}{\sqrt{N_{\mathrm{source}} + N_{\mathrm{background}}}} \approx 70
+```
 
 **Implications for spectral fitting:**
 
@@ -927,7 +939,7 @@ If a bin would become more elongated, the algorithm starts a new bin.
 ### Algorithm (Sanders 2006)
 
 1. **Smooth the image** to target S/N using adaptive Gaussian smoothing:
-   $$\sigma_{\text{smooth}}(x,y) = \text{radius where } \text{S/N} = \text{smoothsn}$$
+   - σ_smooth(x,y) = radius where S/N = smoothsn
 
 2. **Identify contours** of constant surface brightness in the smoothed image
 
@@ -962,12 +974,14 @@ make_region_files --minx={min_x} --miny={min_y} --bin=1 --outdir=outreg contbin_
 **Why needed:** The binmap image has its own pixel coordinates starting at (0,0). But the original event file uses **physical sky coordinates** (typically centered around 4096.5, 4096.5).
 
 The conversion:
-$$
-x_{\text{physical}} = x_{\text{binmap}} \times \text{bin} + \text{minx}
-$$
-$$
-y_{\text{physical}} = y_{\text{binmap}} \times \text{bin} + \text{miny}
-$$
+
+```math
+x_{\mathrm{physical}} = x_{\mathrm{binmap}} \times \mathrm{bin} + \mathrm{minx}
+```
+
+```math
+y_{\mathrm{physical}} = y_{\mathrm{binmap}} \times \mathrm{bin} + \mathrm{miny}
+```
 
 **How to get these values:** From the FITS header keyword `DSVAL1` of the cropped image:
 
@@ -1078,19 +1092,22 @@ The conversion uses these FITS header keywords:
 | `CTYPE1`, `CTYPE2` | Projection type | RA---TAN, DEC--TAN |
 
 **Transformation:**
-$$
+
+```math
 \begin{pmatrix} \Delta\alpha \cos\delta \\ \Delta\delta \end{pmatrix} = 
-\begin{pmatrix} \text{CD1\_1} & \text{CD1\_2} \\ \text{CD2\_1} & \text{CD2\_2} \end{pmatrix}
-\begin{pmatrix} x - \text{CRPIX1} \\ y - \text{CRPIX2} \end{pmatrix}
-$$
+\begin{pmatrix} \mathrm{CD1\_1} & \mathrm{CD1\_2} \\ \mathrm{CD2\_1} & \mathrm{CD2\_2} \end{pmatrix}
+\begin{pmatrix} x - \mathrm{CRPIX1} \\ y - \mathrm{CRPIX2} \end{pmatrix}
+```
 
 Then:
-$$
-\alpha = \text{CRVAL1} + \Delta\alpha / \cos\delta
-$$
-$$
-\delta = \text{CRVAL2} + \Delta\delta
-$$
+
+```math
+\alpha = \mathrm{CRVAL1} + \Delta\alpha / \cos\delta
+```
+
+```math
+\delta = \mathrm{CRVAL2} + \Delta\delta
+```
 
 ### Sexagesimal Format
 
@@ -1216,14 +1233,16 @@ $$
 ### Signal-to-Noise Relationships
 
 For source-dominated regime (clusters):
-$$
-\text{S/N} \approx \sqrt{N_{\text{source}}}
-$$
+
+```math
+\mathrm{S/N} \approx \sqrt{N_{\mathrm{source}}}
+```
 
 Counts needed for target S/N:
-$$
-N \approx (\text{S/N})^2
-$$
+
+```math
+N \approx (\mathrm{S/N})^2
+```
 
 | S/N | Counts Needed |
 |-----|---------------|
